@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Leaderboard</h2>
+<ol class="list-group list-group-numbered">
+  {% for entry in leaderboard %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ entry.name }}</span>
+      <span>{{ entry.score }}</span>
+    </li>
+  {% endfor %}
+</ol>
+<a href="/" class="btn btn-secondary mt-3">Back to Start</a>
+{% endblock %}

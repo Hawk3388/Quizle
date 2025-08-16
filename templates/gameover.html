@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-danger text-center">
+  <h2>Game Over, {{ session['name'] }}!</h2>
+  <p>Your Score: <strong>{{ score }}</strong></p>
+</div>
+
+<h3 class="mt-4">Leaderboard</h3>
+<ol class="list-group list-group-numbered">
+  {% for entry in leaderboard %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ entry.name }}</span>
+      <span>{{ entry.score }}</span>
+    </li>
+  {% endfor %}
+</ol>
+
+<a href="/" class="btn btn-primary mt-4">Restart</a>
+{% endblock %}

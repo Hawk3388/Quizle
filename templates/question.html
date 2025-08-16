@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+input[type="radio"] {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #333; /* dark border */
+  accent-color: green;     /* color when selected */
+}
+</style>
+
+<div class="card p-4 shadow-lg">
+  <h2>{{ q.question }}</h2>
+  <h5>Your Score: {{ session['score'] }}</h5>
+  <form action="/check" method="post" class="mt-3">
+    {% for opt in q.options %}
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="option" value="{{ opt }}" id="{{ loop.index }}" required>
+        <label class="form-check-label" for="{{ loop.index }}">{{ opt }}</label>
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-success mt-3">Submit Answer</button>
+  </form>
+</div>
+{% endblock %}
