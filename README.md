@@ -1,6 +1,6 @@
 # Quizle
 
-Quizle is an infinite quiz game powered by the Google Gemini API. It generates unique, increasingly difficult multiple-choice questions across a wide range of topics. Your scores are tracked in a tier list leaderboard.
+Quizle is an infinite quiz game powered by the Google Gemini API. It generates unique, increasingly difficult multiple-choice questions across a wide range of topics. Scores are tracked in a leaderboard.
 
 ## Features
 
