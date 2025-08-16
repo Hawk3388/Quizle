@@ -8,7 +8,7 @@ load_dotenv()
 
 # Flask App
 app = Flask(__name__)
-app.secret_key = "supersecret"
+app.secret_key = os.getenv("SECRET_KEY", "fallbacksecret")
 
 # Gemini Setup
 model = "gemini-2.0-flash-lite"
@@ -46,7 +46,7 @@ def get_question_from_chat(chat):
         prompt,
         config={
             "temperature": 1.9,
-            "top_p": 0.9,
+            "top_p": 0.95,
             "response_mime_type": "application/json",
             "response_schema": Quiz.model_json_schema()
         }
@@ -113,4 +113,6 @@ def show_leaderboard():
     return render_template("leaderboard.html", leaderboard=leaderboard)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
