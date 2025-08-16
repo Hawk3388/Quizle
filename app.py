@@ -45,7 +45,7 @@ def get_question_from_chat(chat):
     response = chat.send_message(
         prompt,
         config={
-            "temperature": 1.0,
+            "temperature": 1.9,
             "top_p": 0.9,
             "response_mime_type": "application/json",
             "response_schema": Quiz.model_json_schema()
@@ -113,4 +113,4 @@ def show_leaderboard():
     return render_template("leaderboard.html", leaderboard=leaderboard)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
