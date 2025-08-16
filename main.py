@@ -2,6 +2,7 @@ from google import genai
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 model = "gemini-2.0-flash-lite"
@@ -16,6 +17,20 @@ class Quiz(BaseModel):
     rightanswer: str
 
 print("Welcome to Quizle!")
+
+name = input("Enter your nickname: ")
+
+if os.path.exists("tierlist.json"):
+    with open("tierlist.json", "r") as f:
+        tierlist = json.load(f)
+
+    if not tierlist:
+        tierlist = []
+else:
+    with open("tierlist.json", "w") as f:
+        json.dump([], f)
+
+    tierlist = []
 
 while True: 
     prompt = """
@@ -82,11 +97,32 @@ while True:
                 print(f"Your score: {score}")
                 if score > highscore:
                     print(f"New high score: {score}!")
-                    highscore = score
+                    highscore = score  
             else:
                 print(f"Wrong! The correct answer is: {answer}")
+                if len(tierlist) < 10:
+                    tierlist.append({"name": name, "score": score})
+                    with open("tierlist.json", "w") as f:
+                        tierlist = sorted(tierlist, key=lambda x: x["score"], reverse=True)
+                        json.dump(tierlist, f, indent=4)
+                else:
+                    if highscore > tierlist[-1]["score"]:
+                        tierlist[-1] = {"name": name, "score": highscore}
+                        tierlist = sorted(tierlist, key=lambda x: x["score"], reverse=True)
+                        with open("tierlist.json", "w") as f:
+                            json.dump(tierlist, f, indent=4)
                 score = 0
                 chat = client.chats.create(model=model)
             break
         else:
             print("Invalid input. Please enter A, B, C, or D.")
+
+    while True:
+        replay = input("Do you want to play again? (Y/n): ").strip().lower()
+        if replay == "y" or not replay:
+            break
+        elif replay == "n":
+            print("Thanks for playing!")
+            exit()
+        else:
+            print("Invalid input. Please enter Y or n.")
