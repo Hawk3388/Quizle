@@ -115,7 +115,11 @@ def check():
 @app.route("/gameover")
 def gameover():
     render = render_template("gameover.html", score=session.get("score", 0), leaderboard=leaderboard)
+    name = session.get("name")
     session.clear()
+    if name:
+        session["name"] = name
+        session["score"] = 0
     return render
 
 @app.route("/leaderboard")
