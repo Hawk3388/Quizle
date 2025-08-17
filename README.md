@@ -19,21 +19,21 @@ Quizle is an infinite quiz game powered by the Google Gemini API. It generates u
 1. Clone the repository.
 2. Install dependencies:
 
-```sh
-pip install google-genai python-dotenv
-```
+    ```sh
+    pip install google-genai python-dotenv
+    ```
 
 3. Create a `.env` file with your Google API key:
 
-```bash
-GOOGLE_API_KEY=your_api_key_here
-```
+    ```bash
+    GOOGLE_API_KEY=your_api_key_here
+    ```
 
 4. Run the game:
 
-```sh
-python main.py
-```
+    ```sh
+    python main.py
+    ```
 
 ## Leaderboard
 

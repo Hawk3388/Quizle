@@ -3,6 +3,7 @@
 <div class="alert alert-danger text-center">
   <h2>Game Over, {{ session['name'] }}!</h2>
   <p>Your Score: <strong>{{ score }}</strong></p>
+  <p>The right answer was: <strong>{{ session['current_answer'] }}</strong></p>
 </div>
 
 <h3 class="mt-4">Leaderboard</h3>
@@ -15,5 +16,9 @@
   {% endfor %}
 </ol>
 
-<a href="/" class="btn btn-primary mt-4">Restart</a>
+<div class="d-flex justify-content-between mt-4">
+  <a href="/question" class="btn btn-primary">Restart</a>
+  <a href="/" class="btn btn-primary">Home</a>
+</div>
+
 {% endblock %}

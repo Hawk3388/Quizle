@@ -44,7 +44,7 @@ while True:
     - Avoid overly common or repetitive questions.
     - Format the response as a JSON object with 'question', 'options', 'rightanswer'.
     """
-
+    game_over = False
     response = chat.send_message(
         prompt,
         config={
@@ -54,14 +54,6 @@ while True:
             "response_schema": Quiz.model_json_schema()
         }
     )
-    # response = client.models.generate_content(
-    #     model="gemini-2.0-flash-lite",
-    #     contents=prompt,
-    #     config={
-    #         "response_mime_type": "application/json",
-    #         "response_schema": Quiz.model_json_schema()
-    #     }
-    # )
 
     response = Quiz.model_validate(response.parsed)
 
@@ -112,17 +104,24 @@ while True:
                         with open("tierlist.json", "w") as f:
                             json.dump(tierlist, f, indent=4)
                 score = 0
+                game_over = True
                 chat = client.chats.create(model=model)
             break
         else:
             print("Invalid input. Please enter A, B, C, or D.")
 
-    while True:
-        replay = input("Do you want to play again? (Y/n): ").strip().lower()
-        if replay == "y" or not replay:
-            break
-        elif replay == "n":
-            print("Thanks for playing!")
-            exit()
-        else:
-            print("Invalid input. Please enter Y or n.")
+    if len(chat._comprehensive_history) >= 4:
+        pop_i = len(chat._comprehensive_history) - 2
+        chat._comprehensive_history.pop(pop_i)
+        chat._curated_history.pop(pop_i)
+
+    if game_over:
+        while True:
+            replay = input("Do you want to play again? (Y/n): ").strip().lower()
+            if replay == "y" or not replay:
+                break
+            elif replay == "n":
+                print("Thanks for playing!")
+                exit()
+            else:
+                print("Invalid input. Please enter Y or n.")
