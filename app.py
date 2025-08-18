@@ -46,6 +46,7 @@ def get_question_from_chat(chat):
     - Make each question unique in topic, style, and wording.
     - Avoid overly common or repetitive questions.
     - Format the response as a JSON object with 'question', 'options', 'rightanswer'.
+    - Do not make duplicate questions.
     """
 
     response = chat.send_message(
@@ -79,8 +80,8 @@ def question():
         chat._comprehensive_history.pop(pop_i)
         chat._curated_history.pop(pop_i)
 
-    if len(chat._comprehensive_history) >= 100:
-        over = len(chat._comprehensive_history) - 100
+    if len(chat._comprehensive_history) >= 500:
+        over = len(chat._comprehensive_history) - 500
         for i in range(over):
             i += 1
             i *= -1
@@ -129,4 +130,3 @@ def show_leaderboard():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
