@@ -9,7 +9,6 @@ load_dotenv()
 
 # Flask App
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "fallbacksecret")
 
 # Gemini Setup
 model = "gemini-2.0-flash-lite"
