@@ -2,13 +2,35 @@
 {% block content %}
 <div class="card p-4 shadow-lg">
   <h2>Welcome!</h2>
-  <form method="post" class="mt-3">
-    <div class="mb-3">
-      <label class="form-label">Your Name:</label>
-      <input type="text" name="name" class="form-control" required>
+  
+  {% if existing_name %}
+    <!-- Player already has a name -->
+    <div class="alert alert-info">
+      <strong>Welcome back, {{ existing_name }}!</strong><br>
+      Click "Start Quiz" to play.
     </div>
-    <button type="submit" class="btn btn-primary">Start Quiz</button>
-  </form>
+    <form method="post" class="mt-3">
+      <input type="hidden" name="name" value="{{ existing_name }}">
+      <button type="submit" class="btn btn-primary">Start Quiz</button>
+    </form>
+  {% else %}
+    <!-- New player -->
+    {% if error %}
+      <div class="alert alert-danger">
+        {{ error }}
+      </div>
+    {% endif %}
+    
+    <form method="post" class="mt-3">
+      <div class="mb-3">
+        <label class="form-label">Your Name:</label>
+        <input type="text" name="name" class="form-control" required 
+               placeholder="Choose a name">
+      </div>
+      <button type="submit" class="btn btn-primary">Start Quiz</button>
+    </form>
+  {% endif %}
+  
   <a href="/leaderboard" class="btn btn-link mt-3">View Leaderboard</a>
 </div>
 {% endblock %}

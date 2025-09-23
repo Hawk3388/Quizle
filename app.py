@@ -31,10 +31,40 @@ if os.path.exists("tierlist.json"):
         leaderboard = json.load(f)
 else:
     leaderboard = []
+    with open("tierlist.json", "w") as f:
+        json.dump(leaderboard, f)
+
+# IP-Name Mapping laden
+if os.path.exists("ip_names.json"):
+    with open("ip_names.json", "r") as f:
+        ip_names = json.load(f)
+else:
+    ip_names = {}
+    with open("ip_names.json", "w") as f:
+        json.dump(ip_names, f)
 
 def save_leaderboard():
     with open("tierlist.json", "w") as f:
         json.dump(leaderboard, f, indent=4)
+
+def save_ip_names():
+    with open("ip_names.json", "w") as f:
+        json.dump(ip_names, f, indent=4)
+
+def get_client_ip():
+    """Gets the real IP address of the client"""
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        return request.environ['REMOTE_ADDR']
+    else:
+        # Takes the first IP from the list (real client IP)
+        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
+
+def is_name_taken_by_other_ip(name, current_ip):
+    """Checks if a name is already used by another IP"""
+    for ip, stored_name in ip_names.items():
+        if stored_name.lower() == name.lower() and ip != current_ip:
+            return True
+    return False
 
 def get_question_from_chat(chat):
     prompt = """
@@ -62,12 +92,36 @@ def get_question_from_chat(chat):
 
 @app.route("/", methods=["GET", "POST"])
 def start():
+    global ip_names
+    client_ip = get_client_ip()
+    
     if request.method == "POST":
-        name = request.form["name"]
-        session["name"] = name
+        requested_name = request.form["name"].strip()
+        
+        # Check if this IP already has a name
+        if client_ip in ip_names:
+            # IP already has a name - use the stored name
+            name = ip_names[client_ip]
+            session["name"] = name
+            session["score"] = 0
+            return redirect(url_for("question"))
+        
+        # Check if the desired name is already taken by another IP
+        if is_name_taken_by_other_ip(requested_name, client_ip):
+            error = "This name is already taken by another player. Please choose a different name."
+            return render_template("start.html", error=error, existing_name=None)
+        
+        # Name is available - link IP with name
+        ip_names[client_ip] = requested_name
+        save_ip_names()
+        
+        session["name"] = requested_name
         session["score"] = 0
         return redirect(url_for("question"))
-    return render_template("start.html")
+    
+    # GET Request - check if IP already has a name
+    existing_name = ip_names.get(client_ip)
+    return render_template("start.html", error=None, existing_name=existing_name)
 
 @app.route("/question")
 def question():
@@ -94,6 +148,7 @@ def question():
 
 @app.route("/check", methods=["POST"])
 def check():
+    global leaderboard
     player = session.get("name")
     if not player:
         return redirect(url_for("start"))
@@ -105,11 +160,12 @@ def check():
         session["score"] += 1
         return redirect(url_for("question"))
     else:
-        # Score ins Leaderboard eintragen
+        # Add score to leaderboard
         leaderboard.append({"name": player, "score": session["score"]})
         leaderboard.sort(key=lambda x: x["score"], reverse=True)
-        if len(leaderboard) > 10:
-            leaderboard.pop()  # nur Top 10
+        # Keep only top 100
+        if len(leaderboard) > 100:
+            leaderboard = leaderboard[:100]
         save_leaderboard()
         return redirect(url_for("gameover"))
 
