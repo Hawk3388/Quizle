@@ -79,16 +79,50 @@ def get_question_from_chat(chat):
     - Do not make duplicate questions.
     """
 
-    response = chat.send_message(
-        prompt,
-        config={
-            "temperature": 1.9,
-            "top_p": 0.95,
-            "response_mime_type": "application/json",
-            "response_schema": Quiz.model_json_schema()
-        }
-    )
-    return Quiz.model_validate(response.parsed)
+    try:
+        response = chat.send_message(
+            prompt,
+            config={
+                "temperature": 1.9,
+                "top_p": 0.95,
+                "response_mime_type": "application/json",
+                "response_schema": Quiz.model_json_schema()
+            }
+        )
+        return Quiz.model_validate(response.parsed)
+    except Exception as e:
+        print(f"API Error: {e}")
+        # Fallback questions when API is unavailable
+        fallback_questions = [
+            {
+                "question": "What is the capital of France?",
+                "options": ["London", "Berlin", "Paris", "Madrid"],
+                "rightanswer": "Paris"
+            },
+            {
+                "question": "Which planet is known as the Red Planet?",
+                "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+                "rightanswer": "Mars"
+            },
+            {
+                "question": "Who wrote 'Romeo and Juliet'?",
+                "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+                "rightanswer": "William Shakespeare"
+            },
+            {
+                "question": "What is 2 + 2?",
+                "options": ["3", "4", "5", "6"],
+                "rightanswer": "4"
+            },
+            {
+                "question": "Which ocean is the largest?",
+                "options": ["Atlantic", "Indian", "Arctic", "Pacific"],
+                "rightanswer": "Pacific"
+            }
+        ]
+        import random
+        fallback = random.choice(fallback_questions)
+        return Quiz(**fallback)
 
 @app.route("/", methods=["GET", "POST"])
 def start():
