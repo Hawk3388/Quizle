@@ -5,7 +5,7 @@ import os
 import json
 
 load_dotenv()
-model = "gemini-2.0-flash-lite"
+model = "gemini-2.5-flash-lite"
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 chat = client.chats.create(model=model)
 score = 0
