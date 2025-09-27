@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 # Gemini Setup
-model = "gemini-2.5-flash-lite"
+model = "gemini-2.0-flash-lite"
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Global dict für aktive Spieler-Chats
